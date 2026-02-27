@@ -40,6 +40,10 @@ export interface UserQueryParams {
   username?: string
 }
 
+export interface DeleteUsersRequest {
+  ids: string[]
+}
+
 // ============ API 类型 ============
 /**
  * API 响应头接口

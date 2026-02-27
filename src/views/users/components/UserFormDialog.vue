@@ -67,6 +67,9 @@ const formToRole = (role: string): string => {
   return '普通用户'
 }
 
+// 密码复杂度验证正则：必须包含大写字母、小写字母和数字
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
+
 // 规则
 const rules = {
   username: [
@@ -79,7 +82,12 @@ const rules = {
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+    { min: 8, max: 20, message: '长度在 8 到 20 个字符', trigger: 'blur' },
+    {
+      pattern: passwordPattern,
+      message: '密码必须包含大写字母、小写字母和数字',
+      trigger: 'blur'
+    }
   ],
   confirmPassword: [
     { required: true, message: '请确认密码', trigger: 'blur' },
@@ -189,6 +197,9 @@ const handleClose = () => {
           show-password
           @keyup.enter="handleSubmit"
         />
+        <div class="password-hint">
+          密码要求：8-20 位，包含大写字母、小写字母和数字
+        </div>
       </el-form-item>
 
       <el-form-item label="确认密码" prop="confirmPassword" v-if="!user">
@@ -233,5 +244,12 @@ const handleClose = () => {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.password-hint {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  margin-top: 4px;
+  line-height: 1.5;
 }
 </style>

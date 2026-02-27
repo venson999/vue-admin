@@ -28,7 +28,7 @@ function updateTokenFromHeaders(headers: unknown): void {
 
 // 创建 axios 实例
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: import.meta.env.VITE_APP_API_BASE_URL || '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ axiosInstance.interceptors.response.use(
       return data
     }
 
-    // 业务错误
+    // 业务错误 - 优先显示后端返回的错误信息
     ElMessage.error(msg || '请求失败')
     return Promise.reject(new Error(msg))
   },
@@ -82,8 +82,16 @@ axiosInstance.interceptors.response.use(
     // HTTP 错误处理
     if (error.response) {
       const status = error.response.status
-      const message = HTTP_ERROR_MESSAGES[status] || `请求失败: ${status}`
-      ElMessage.error(message)
+      const data = error.response.data as any
+
+      // 优先显示后端返回的业务错误信息
+      if (data && typeof data === 'object' && 'msg' in data) {
+        const businessMsg = data.msg
+        ElMessage.error(businessMsg || HTTP_ERROR_MESSAGES[status] || `请求失败: ${status}`)
+      } else {
+        const message = HTTP_ERROR_MESSAGES[status] || `请求失败: ${status}`
+        ElMessage.error(message)
+      }
 
       // 401 需要特殊处理：清除 token 并跳转到登录页
       if (status === 401) {

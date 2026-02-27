@@ -3,6 +3,7 @@ import type {
   SysUser,
   CreateUserRequest,
   UpdateUserRequest,
+  DeleteUsersRequest,
   UserQueryParams,
   PageData
 } from '@/types'
@@ -42,5 +43,13 @@ export function deleteUser(id: string): Promise<void> {
   return request({
     url: `/users/${id}`,
     method: 'delete'
+  })
+}
+
+export function deleteUsers(data: DeleteUsersRequest): Promise<number> {
+  return request({
+    url: '/users',
+    method: 'delete',
+    data
   })
 }

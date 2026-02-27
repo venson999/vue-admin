@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getUserPage, createUser, updateUser, deleteUser as deleteUserApi } from '@/api/user'
+import { getUserPage, createUser, updateUser, deleteUser, deleteUsers } from '@/api/user'
 import type { SysUser, UserQueryParams } from '@/types'
 import UserFormDialog from './components/UserFormDialog.vue'
 
@@ -108,7 +108,7 @@ const handleFormSubmit = async (formData: any) => {
 const handleDelete = async (id: string) => {
   try {
     await ElMessageBox.confirm('确定要删除该用户吗？', '确认删除', { type: 'warning' })
-    await deleteUserApi(id)
+    await deleteUser(id)
     ElMessage.success('删除成功')
     loadUsers()
   } catch {
@@ -124,8 +124,8 @@ const handleBatchDelete = async () => {
 
   try {
     await ElMessageBox.confirm(`确定要删除选中的 ${selectedUsers.value.length} 个用户吗？`, '批量删除', { type: 'warning' })
-    await Promise.all(selectedUsers.value.map(id => deleteUserApi(id)))
-    ElMessage.success('批量删除成功')
+    const count = await deleteUsers({ ids: selectedUsers.value })
+    ElMessage.success(`成功删除 ${count} 个用户`)
     selectedUsers.value = []
     loadUsers()
   } catch {
